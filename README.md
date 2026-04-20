@@ -103,5 +103,5 @@ For authorized security testing only. The author and Project-Hellhound are not r
 
 ## Author
 
-**L4ZZ3RJ0D**  
+**[L4ZZ3RJ0D]**(https://github.com/l4zz3rj0d)  
 Integrated into the [Hellhound Pentest Framework](https://github.com/l4zz3rj0d/Hellhound-Pentest).
