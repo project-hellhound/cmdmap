@@ -2,43 +2,45 @@
   <img src="images/cmdmap.jpeg" alt="CMDmap" width="600"/>
 </p>
 
-<h1 align="center">CMDmap - Autonomous CMDi Detector</h1>
+<h1 align="center">CMDmap</h1>
+<h3 align="center">Autonomous Command Injection Detector</h3>
 
 <p align="center">
   <img src="https://img.shields.io/badge/python-3.10+-blue?style=flat-square&logo=python&logoColor=white"/>
   <img src="https://img.shields.io/badge/version-1.0.0-red?style=flat-square"/>
-  <img src="https://img.shields.io/badge/engine-Adaptive%20Evasion-orange?style=flat-square"/>
+  <img src="https://img.shields.io/badge/engine-Hellhound--Spider-orange?style=flat-square"/>
+  <img src="https://img.shields.io/badge/evasion-Adaptive%20Bypass-critical?style=flat-square"/>
   <img src="https://img.shields.io/badge/license-GPL--3.0-blue?style=flat-square"/>
+  <img src="https://img.shields.io/badge/platform-Linux%20%7C%20macOS-lightgrey?style=flat-square"/>
+</p>
+
+<p align="center">
+  <b>SPA-aware &nbsp;·&nbsp; OS-fingerprinted &nbsp;·&nbsp; WAF-adaptive &nbsp;·&nbsp; OOB-verified &nbsp;·&nbsp; Zero false positives</b>
 </p>
 
 ---
 
 ## Overview
 
-**CMDmap** (internally known as **CMDINJ**) is a high-fidelity, autonomous command injection detector designed for the modern web. Unlike traditional scanners, CMDmap uses a multi-tier verification engine to eliminate false positives and bypass sophisticated filters.
+CMDmap is a high-fidelity, autonomous command injection detector built for modern web targets. It pairs a SPA-aware crawler with a 5-tier injection engine that auto-escalates from direct output tests through timing-based blind detection to OOB callbacks — stopping only when execution is confirmed or all vectors are exhausted.
 
-It transitions from simple reflection tests to complex timing-based attacks and Out-of-Band (OOB) interactions, culminating in a verified Proof-of-Concept (PoC).
+Every finding is verified, timestamped, and delivered with a ready-to-run `curl` PoC.
 
 ---
 
-## Core Features
+## Features
 
-1.  **SPA-Aware Crawler**: Deep extraction of endpoints from HTML and JavaScript/SPA environments.
-2.  **Autonomous Fingerprinting**: Automatically detects the target OS (Linux/Windows) to tailor payloads.
-3.  **Adaptive Evasion**: Generates encoded, space-bypassed (IFS, tab, brace), and differential timing payloads when direct execution fails.
-4.  **5-Tier Injection Engine**:
-    *   **Tier 1**: Direct Output (echo/token)
-    *   **Tier 2**: Time-based Blind (auto-escalate)
-    *   **Tier 3**: Output Redirection
-    *   **Tier 4**: OOB (Self-hosted listener or Collaborator)
-    *   **Tier 5**: Response-Adaptive Evasion (WAF bypass)
-5.  **OOB Verification**: Includes a self-hosted OOB server for blind verification without external services.
+- **5-Tier Injection Engine** — Direct output → Time-blind → Redirect → OOB → Adaptive bypass
+- **Adaptive WAF Evasion** — IFS/tab/brace, base64-wrap, hex, `dd`-timing, ANSI-C quoting, variable concat
+- **Self-Hosted OOB Listener** — Blind CMDi confirmed without external collaborator
+- **4-Stage False Positive Elimination** — Type detection, reflection filtering, error context analysis
+- **Post-Exploitation File Read** — Auto-attempts `/etc/passwd` or `win.ini` after confirmed injection
+- **Authenticated Scanning** — Cookie, Bearer token, or automated form login
+- **Extensible Payload System** — Drop `.txt` files into `payloads/custom/` to extend coverage
 
 ---
 
 ## Installation
-
-### Linux / macOS
 
 ```bash
 git clone https://github.com/project-hellhound/cmdmap.git
@@ -47,62 +49,103 @@ chmod +x install.sh
 ./install.sh
 ```
 
-This creates an isolated virtual environment and links the `cmdmap` command globally.
-
-### Manual Setup
+Requires Python 3.10+. Creates an isolated virtualenv and links `cmdmap` globally.
 
 ```bash
+# Manual install
 pip install -e .
+
+# Initialize external payload directory
+cmdmap --init-payloads
 ```
+
+---
+
+## Evidence
+
+<p align="center">
+  <img src="images/screenshot_banner_recon.png" alt="Reconnaissance phase" width="720"/>
+</p>
+
+<p align="center">
+  <img src="images/screenshot_injection_findings.png" alt="Confirmed injection findings with PoC" width="720"/>
+</p>
+
+<p align="center">
+  <img src="images/screenshot_file_read.png" alt="Critical compromise — /etc/passwd read" width="720"/>
+</p>
 
 ---
 
 ## Usage
 
 ```bash
+# Basic scan
 cmdmap https://target.com/api/v1/ping
-```
 
-### Advanced Options
+# Authenticated scan
+cmdmap https://target.com/admin/ --cookie "session=abc123"
 
-| Flag | Description |
-| :--- | :--- |
-| `--cookie` | Session cookie or path to cookie file |
-| `--header` | Custom HTTP header (e.g., `Authorization: Bearer ...`) |
-| `--threads` | Concurrent scan threads (default: 10) |
-| `--collab` | Custom OOB collaborator URL |
-| `--verbose` | Enable high-fidelity debug logging |
-| `--login-url` | Perform automated form-login before scanning |
+# Bearer token
+cmdmap https://target.com/api/ --header "Authorization: Bearer <token>"
 
-### Authenticated Scan Example
+# Form login
+cmdmap https://target.com/dashboard \
+  --login-url https://target.com/login \
+  --login-user admin --login-pass admin123
 
-```bash
-cmdmap https://target.com/admin/tools --cookie "session=xyz123" --verbose
+# Custom OOB collaborator
+cmdmap https://target.com/ --collab https://your.interactsh.server
+
+# Verbose
+cmdmap https://target.com/ --verbose
 ```
 
 ---
 
-## Finding Classification
+## Options
 
-CMDmap categorizes findings based on the verification signal:
+| Flag | Description |
+|:---|:---|
+| `--cookie` | Session cookie or Authorization header |
+| `--header` | Custom HTTP header (`Key: Value`) |
+| `--threads` | Concurrent threads (default: 10) |
+| `--collab` | External OOB collaborator URL |
+| `--login-url` | Login endpoint for authenticated scans |
+| `--login-user` / `--login-pass` | Login credentials |
+| `--spider-json` | Import pre-crawled endpoints from JSON |
+| `--force-os` | Override OS detection (`linux` \| `windows`) |
+| `--time-thresh` | Timing threshold in seconds (default: 6.0) |
+| `--json` | JSON output path (auto-generated if omitted) |
+| `--init-payloads` | Create payload directory scaffold and exit |
+| `--verbose` | Enable debug logging |
 
-| Signal | Meaning | Confidence |
-| :--- | :--- | :--- |
-| `[FOUND:DIRECT]` | System output (e.g., `id`, `whoami`) reflected in response. | **100%** |
-| `[FOUND:TIME]` | Validated execution via consistent timing delays. | **95%** |
-| `[FOUND:OOB]` | Out-of-band interaction (DNS/HTTP) confirmed. | **100%** |
-| `[VERIFY:REDIRECT]` | Potential execution confirmed via file write/readback. | **90%** |
+---
+
+## Finding types
+
+| Type | Confidence |
+|:---|:---|
+| `DIRECT OUTPUT` — system command output in response | 100% |
+| `BLIND:TIME-DELAY` — statistically validated timing delay | 95% |
+| `OOB` — DNS or HTTP callback confirmed | 100% |
+| `REDIRECT` — file write + web readback verified | 90% |
+
+---
+
+## Part of Hellhound
+
+CMDmap is the command injection agent in the [Hellhound Pentest Framework](https://github.com/l4zz3rj0d/Hellhound-Pentest) and the CyArt VAPT platform.
 
 ---
 
 ## Legal
 
-For authorized security testing only. This software is licensed under the **GNU General Public License v3 (GPLv3)**.
+For authorized security testing only. Licensed under **GPLv3**.
 
 ---
 
-## Author
-
-[**L4ZZ3RJ0D**](https://github.com/l4zz3rj0d)  
-
-Integrated into the [Hellhound Pentest Framework](https://github.com/l4zz3rj0d/Hellhound-Pentest).
+<p align="center">
+  Built by <a href="https://github.com/l4zz3rj0d"><b>L4ZZ3RJ0D</b></a> &nbsp;·&nbsp;
+  <a href="https://github.com/project-hellhound/cmdmap">project-hellhound/cmdmap</a>
+</p>
