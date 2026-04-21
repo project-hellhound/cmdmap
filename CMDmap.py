@@ -402,6 +402,7 @@ def print_banner():
         ("Version", "1.0.0  [SPA+PROBE+VERIFIED+PoC+ADAPTIVE+dd/TAB+BLIND-FR+DECODED+BLIND-AWARE]"),
         ("Engine",  "Hellhound-Spider → Fingerprint → Inject → Verify → PoC"),
         ("Safety",  "Non-destructive payloads + 4-stage FP elimination + Adaptive bypass"),
+        ("License", "GNU General Public License v3 (GPLv3)"),
     ]
     for k, v in meta:
         print(f"  {color(k + ':', C.R, C.B):<16} {color(v, C.W)}")

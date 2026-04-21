@@ -8,7 +8,7 @@
   <img src="https://img.shields.io/badge/python-3.10+-blue?style=flat-square&logo=python&logoColor=white"/>
   <img src="https://img.shields.io/badge/version-1.0.0-red?style=flat-square"/>
   <img src="https://img.shields.io/badge/engine-Adaptive%20Evasion-orange?style=flat-square"/>
-  <img src="https://img.shields.io/badge/license-MIT-green?style=flat-square"/>
+  <img src="https://img.shields.io/badge/license-GPL--3.0-blue?style=flat-square"/>
 </p>
 
 ---
@@ -97,7 +97,7 @@ CMDmap categorizes findings based on the verification signal:
 
 ## Legal
 
-For authorized security testing only. The author and Project-Hellhound are not responsible for misuse or damage caused by this tool.
+For authorized security testing only. This software is licensed under the **GNU General Public License v3 (GPLv3)**.
 
 ---
 
