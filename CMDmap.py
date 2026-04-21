@@ -45,6 +45,8 @@ import urllib.request
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime
 from html.parser import HTMLParser
+# External payload loader — dispatches payload files by runtime context
+from payload_loader import PayloadLoader as _PayloadLoader, build_context_keys as _build_context_keys
 
 # ─────────────────────────────────────────────────────────────────────────────
 # ANSI COLORS
@@ -2781,7 +2783,8 @@ class SelfHostedOOBServer:
 class Injector:
     def __init__(self, client, token, os_target="linux", run_both=False,
                  time_threshold=6.0, safe_mode=True,
-                 collab_url=None, output_dir=None, read_path=None):
+                 collab_url=None, output_dir=None, read_path=None,
+                 extra_payloads=None):
         self.client         = client
         self.token          = token
         self.os_target      = os_target
@@ -2845,7 +2848,10 @@ class Injector:
         self.payloads_redirect = []
         self.payloads_oob      = []
 
-        for tmpl, desc, verify_type, is_time, os_type in PAYLOADS:
+        # Build from internal PAYLOADS list first, then extend with external payloads.
+        _all_sources = list(PAYLOADS) + list(extra_payloads or [])
+
+        for tmpl, desc, verify_type, is_time, os_type in _all_sources:
             if os_type not in ("both", self.os_target) and not self.run_both:
                 continue
             resolved = tmpl.replace("TOKEN", token)
@@ -6727,7 +6733,20 @@ Spider import mode (Agent 2 crawl JSON — skips built-in crawler):
     parser.add_argument("--proxy",         metavar="URL", default=None,
                         help="HTTP proxy URL for all requests "
                              "(e.g. http://127.0.0.1:8080).")
+    parser.add_argument("--init-payloads", action="store_true",
+                        help="Create payloads/ directory scaffold and exit.")
     args = parser.parse_args()
+
+    if args.init_payloads:
+        from payload_loader import PayloadLoader as _PL
+        from pathlib import Path
+        _loader = _PL()
+        _created = _loader.create_scaffold()
+        print(f"\n  {color('[+]', C.GD)} Scaffold created: {len(_created)} files")
+        for f in _created:
+            print(f"      {color(f, C.DIM)}")
+        print(f"\n  {color('Drop custom payloads in payloads/custom/*.txt', C.W)}")
+        sys.exit(0)
 
     _import_file = getattr(args, "spider_json", None) or getattr(args, "spider", None)
 
@@ -7179,6 +7198,39 @@ Spider import mode (Agent 2 crawl JSON — skips built-in crawler):
         client._waf_delay   = getattr(args, "delay", 0)
         client._waf_detected = False
 
+    # ── External payload dispatch ─────────────────────────────────────────────
+    # Build context keys from signals already available at this point:
+    #   - os_target / run_both     (Phase 2 output)
+    #   - WAF detected filters     (Phase 2b output)
+    #   - collab_url               (CLI arg)
+    #   - all param names          (from endpoints collected in Phase 1)
+    # PayloadLoader loads matching .txt files from payloads/ directory.
+    # Falls back silently to empty list if payloads/ dir does not exist.
+    _all_param_names = list({
+        p for ep in endpoints for p in ep.get("params", {})
+    })
+    _active_filters = set()
+    if _waf_result.get("detected"):
+        _active_filters.add("waf")
+    # Also pull any filter labels detected during WAF probe responses
+    for _probe_body in _waf_result.get("probe_bodies", []):
+        _active_filters |= AdaptiveBypass.detect_filters(_probe_body)
+
+    _ctx_keys    = _build_context_keys(
+        os_target      = os_target,
+        run_both       = run_both,
+        active_filters = _active_filters,
+        collab_url     = getattr(args, "collab", None),
+        param_names    = _all_param_names,
+    )
+    _ext_loader   = _PayloadLoader()
+    _ext_payloads = _ext_loader.load(_ctx_keys)
+    if _ext_payloads:
+        _ext_count = len(_ext_payloads)
+        tprint(f"  {color('PAYLOADS', C.R):<12} {color(f'External: +{_ext_count} loaded ({len(_ctx_keys)} context keys)', C.W)}")
+    else:
+        tprint(f"  {color('PAYLOADS', C.R):<12} {color('External: payloads/ dir not found — internal only', C.DIM)}")
+
     # Phase 3 — Risk analysis
     section("PHASE 3/4 — PARAMETER RISK ANALYSIS")
     endpoints = prioritize_endpoints(endpoints)
@@ -7281,6 +7333,7 @@ Spider import mode (Agent 2 crawl JSON — skips built-in crawler):
         os_target=os_target, run_both=run_both,
         time_threshold=args.time_thresh, safe_mode=safe_mode,
         collab_url=collab_url, output_dir=output_dir, read_path=read_path,
+        extra_payloads=_ext_payloads if '_ext_payloads' in dir() else [],
     )
     # Hand off survived_chars fingerprint from crawler to injector so
     # Tier 5 can pre-filter payloads to chars that pass the sanitization filter.

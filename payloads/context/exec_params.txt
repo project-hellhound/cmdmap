@@ -1,0 +1,31 @@
+# @default_os:     linux
+# @default_signal: system:linux_id
+# @default_blind:  false
+# @default_tier:   1
+#
+# Payloads for cmd/exec/run/shell/eval parameters.
+# These are direct execution sinks — start with identity probes.
+
+# @label: Direct id
+id
+
+# @label: Direct whoami
+# @signal: system:linux_user
+whoami
+
+# @label: Direct sleep
+# @signal: time
+# @blind: true
+sleep 10
+
+# @label: Direct uname
+# @signal: system:linux_uname
+uname -a
+
+# @label: Chained id after noop
+noop;id
+
+# @label: Win direct whoami
+# @os: windows
+# @signal: system:win_user
+whoami

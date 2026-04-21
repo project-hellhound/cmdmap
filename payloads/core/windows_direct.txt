@@ -1,0 +1,27 @@
+# @default_os:     windows
+# @default_signal: system:win_user
+# @default_blind:  false
+# @default_tier:   1
+
+# @label: Ampersand whoami
+&whoami
+
+# @label: Pipe whoami
+|whoami
+
+# @label: Cmd /c whoami
+# @signal: system:win_user
+&cmd /c whoami
+
+# @label: PowerShell whoami
+# @signal: system:win_user
+|powershell -NoP -NonI -W Hidden whoami
+
+# @label: PowerShell encoded whoami
+# @signal: system:win_user
+# Note: d2hvYW1p = base64("whoami")
+|powershell -enc d2hvYW1p
+
+# @label: Win ver
+# @signal: system:win_ver
+&ver

