@@ -135,7 +135,7 @@ cmdmap https://target.com/ --verbose
 
 ## Part of Hellhound
 
-CMDmap is the command injection agent in the [Hellhound Pentest Framework](https://github.com/l4zz3rj0d/Hellhound-Pentest) and the CyArt VAPT platform.
+CMDmap is the command injection agent in the [Hellhound Pentest Framework](https://github.com/project-hellhound-org/Hellhound-Pentest) and the CyArt VAPT platform.
 
 ---
 
@@ -146,6 +146,15 @@ For authorized security testing only. Licensed under **GPLv3**.
 ---
 
 <p align="center">
-  Built by <a href="https://github.com/l4zz3rj0d"><b>L4ZZ3RJ0D</b></a> &nbsp;·&nbsp;
+  Built by <a href="https://l4zz3rj0d.github.io"><b>L4ZZ3RJ0D</b></a> &nbsp;·&nbsp;
   <a href="https://github.com/project-hellhound/cmdmap">project-hellhound/cmdmap</a>
 </p>
+
+
+## Author
+
+<div align="center">
+  <a href="https://l4zz3rj0d.github.io">
+    <img src="https://img.shields.io/badge/Founder-L4ZZ3RJ0D-c0392b?style=for-the-badge" alt="L4ZZ3RJ0D"/>
+  </a>
+</div>
